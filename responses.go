@@ -9,8 +9,8 @@ import (
 )
 
 type ErrorStruct struct {
-	errorMsg string
-	respCode int
+	ErrorMsg string
+	RespCode int
 }
 
 type Response struct {
@@ -32,12 +32,12 @@ func ApiResponse(c *gin.Context, errorMap map[int]ErrorStruct, result bool, data
 	errMsg, exists := errorMap[errCode]
 	if !exists {
 		errMsg = ErrorStruct{
-			errorMsg: "failed to perform the operation due to some generic error at server side",
-			respCode: http.StatusInternalServerError,
+			ErrorMsg: "failed to perform the operation due to some generic error at server side",
+			RespCode: http.StatusInternalServerError,
 		}
 	}
-	resp.Error.Message = errMsg.errorMsg
-	var responseCode = errMsg.respCode
+	resp.Error.Message = errMsg.ErrorMsg
+	var responseCode = errMsg.RespCode
 	response, err := json.Marshal(resp)
 	if err != nil {
 		log.Fatalln("error in marshalling response")
