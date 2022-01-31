@@ -28,7 +28,6 @@ func ApiResponse(c *gin.Context, errorMap map[int]ErrorStruct, result bool, data
 	var resp Response
 	resp.Status = result
 	resp.Data = data
-	resp.Error.Code = errCode
 	errMsg, exists := errorMap[errCode]
 	if !exists {
 		errMsg = ErrorStruct{
@@ -37,9 +36,8 @@ func ApiResponse(c *gin.Context, errorMap map[int]ErrorStruct, result bool, data
 		}
 	}
 	if !(result) {
+		resp.Error.Code = errCode
 		resp.Error.Message = errMsg.ErrorMsg
-	} else {
-		resp.Error = ErrorResponse{}
 	}
 	response, err := json.Marshal(resp)
 	if err != nil {
