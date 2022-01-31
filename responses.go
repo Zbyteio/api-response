@@ -36,12 +36,15 @@ func ApiResponse(c *gin.Context, errorMap map[int]ErrorStruct, result bool, data
 			RespCode: http.StatusInternalServerError,
 		}
 	}
-	resp.Error.Message = errMsg.ErrorMsg
-	var responseCode = errMsg.RespCode
+	if !(result) {
+		resp.Error.Message = errMsg.ErrorMsg
+	} else {
+		resp.Error = ErrorResponse{}
+	}
 	response, err := json.Marshal(resp)
 	if err != nil {
 		log.Fatalln("error in marshalling response")
 		panic(err)
 	}
-	c.Data(responseCode, "application/json", response)
+	c.Data(errMsg.RespCode, "application/json", response)
 }
