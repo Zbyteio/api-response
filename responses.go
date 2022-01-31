@@ -1,4 +1,4 @@
-package response
+package main
 
 import (
 	"encoding/json"
@@ -14,9 +14,9 @@ type ErrorStruct struct {
 }
 
 type Response struct {
-	Status bool          `json:"status"`
-	Data   interface{}   `json:"data"`
-	Error  ErrorResponse `json:"error"`
+	Status bool        `json:"status"`
+	Data   interface{} `json:"data,omitempty"`
+	Error  interface{} `json:"error,omitempty"`
 }
 
 type ErrorResponse struct {
@@ -27,7 +27,6 @@ type ErrorResponse struct {
 func ApiResponse(c *gin.Context, errorMap map[int]ErrorStruct, result bool, data interface{}, errCode int) {
 	var resp Response
 	resp.Status = result
-	resp.Data = data
 	errMsg, exists := errorMap[errCode]
 	if !exists {
 		errMsg = ErrorStruct{
@@ -36,8 +35,12 @@ func ApiResponse(c *gin.Context, errorMap map[int]ErrorStruct, result bool, data
 		}
 	}
 	if !(result) {
-		resp.Error.Code = errCode
-		resp.Error.Message = errMsg.ErrorMsg
+		resp.Error = ErrorResponse{
+			Code:    errCode,
+			Message: errMsg.ErrorMsg,
+		}
+	} else {
+		resp.Data = data
 	}
 	response, err := json.Marshal(resp)
 	if err != nil {
